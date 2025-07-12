@@ -24,7 +24,7 @@ export default {
             title : '',
             details : '',
             day : '',
-            uri : 'http://localhost:3000/projects/' + this.id
+            uri : '/api/projects/' + this.id
         }
     },
     mounted(){
