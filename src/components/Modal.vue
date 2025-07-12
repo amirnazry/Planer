@@ -28,14 +28,14 @@ export default {
         }
     },
     async mounted(){
-        const response = await fetch('http://localhost:3000/status')
+        const response = await fetch('/api/status')
         const data = await response.json()
         this.status = data.status
         // this.date = data.date 
     }
     ,methods:{ 
     closeModal(){
-        fetch('api/status',{
+        fetch('/api/status',{
             method : 'POST',
             headers : {'Content-Type' : 'application/json'},
             body : JSON.stringify({status : this.status})})
