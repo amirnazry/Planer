@@ -1,50 +1,53 @@
-<template>
+<template  dir="rtl">
     <div class="madars">
-    <form @submit.prevent="handleSubmit">
+        <!-- <h1>ویرایش پروژه</h1> -->
+        <form @submit.prevent="handleSubmit">
         <label>موضوع:</label>
         <input  v-model="title" type="text" required>
         <label>جزئیات:</label>
         <textarea  v-model="details"></textarea>
-        <label>انتخاب روز:</label>
         <select v-model="day">
             <option value="one">روز اول</option>
             <option value="two">روز دوم</option>
             <option value="three">روز سوم</option>
         </select>
-        <button>اضافه کردن پروژه</button>
+        <button>بروزرسانی پروژه</button>
     </form>
     </div>
 </template>
 
 <script>
 export default {
+    props : ['id'],
     data(){
         return{
             title : '',
             details : '',
-            day : 'one',
-
+            day : '',
+            uri : 'http://localhost:3000/projects/' + this.id
         }
     },
-    methods:{
-        handleSubmit(){
-             let project ={
-                title : this.title,
-                details : this.details,
-                day : this.day,
-                complete : false
-             }
-            fetch('http://localhost:3000/projects/',{
-            method : 'POST',
+    mounted(){
+    fetch(this.uri)
+        .then(res => res.json())
+        .then(data => {
+            this.title = data.title
+            this.details = data.details
+            this.day = data.day
+        }).catch(err => console.log(err.message))
+    },
+methods:{
+    handleSubmit(){
+        fetch(this.uri,{
+            method : 'PATCH',
             headers : {'Content-Type' : 'application/json'},
-            body : JSON.stringify(project)
-            }).then(() => 
-            this.$router.push('/'))
+            body : JSON.stringify({title : this.title , details : this.details, day : this.day})
+        })
+        .catch(err => console.log(err.message))
+        this.$router.push('/')
+     },
+}}
 
-        }
-    }  
-
-}
 </script>
 
 <style>
@@ -100,23 +103,5 @@ textarea {
 select {
   width: auto;
   min-width: 120px;
-}
-.madars button{
-  display: block;
-  background: #4CAF50;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  width: 70%;
-  margin-top: 20px;
-  font-size: 16px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-.madars button:hover{
-  background: #4c8f4e;
-  transform: scale(1.1);
 }
 </style>
