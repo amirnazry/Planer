@@ -35,7 +35,7 @@ export default {
     }
     ,methods:{ 
     closeModal(){
-        fetch('http://localhost:3000/status',{
+        fetch('api/status',{
             method : 'POST',
             headers : {'Content-Type' : 'application/json'},
             body : JSON.stringify({status : this.status})})
