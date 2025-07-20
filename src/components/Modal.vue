@@ -28,14 +28,14 @@ export default {
         }
     },
     async mounted(){
-        const response = await fetch('https://planer-nine.vercel.app/api/status')
+        const response = await fetch('https://planer-nine.vercel.app/data/db.json')
         const data = await response.json()
         this.status = data.status
         // this.date = data.date 
     }
     ,methods:{ 
     closeModal(){
-        fetch('https://planer-nine.vercel.app/api/status ',{
+        fetch('https://planer-nine.vercel.app/data/db.json',{
             method : 'POST',
             headers : {'Content-Type' : 'application/json'},
             body : JSON.stringify({status : this.status})})
