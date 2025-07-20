@@ -1,30 +1,64 @@
-// فایل: api/status.js
-let statusData = '😍' // متغیر ساده برای نگهداری اطلاعات در حافظه
+export const config = {
+  runtime: 'edge',
+};
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Content-Type', 'application/json')
+const token = '678934e1-3b3c-4a82-86e7-b7668c0afc6d';
+const configId = 'ecfg_4hzwa8qwqvzg4qlcdyq8fpxwieb1';
 
-  if (req.method === 'OPTIONS') return res.status(200).end()
-
+export default async function handler(req) {
   if (req.method === 'GET') {
-    return res.status(200).json({ status: statusData })
+    const response = await fetch(`https://api.vercel.com/v1/edge-config/${configId}/item/status`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'خواندن مقدار ناموفق بود' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const data = await response.json();
+    return new Response(JSON.stringify({ status: data.value }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   if (req.method === 'POST') {
-    let body = ''
-    req.on('data', chunk => body += chunk)
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body)
-        statusData = data.status || '😍'
-        return res.status(200).json({ success: true, status: statusData })
-      } catch (err) {
-        return res.status(400).json({ error: 'Invalid JSON' })
-      }
-    })
-  } else {
-    res.status(405).end() // Method Not Allowed
+    const body = await req.json();
+    const mood = body.status || '😍';
+
+    const updateResponse = await fetch(`https://api.vercel.com/v1/edge-config/${configId}/items`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            operation: 'update',
+            key: 'status',
+            value: mood
+          }
+        ]
+      })
+    });
+
+    if (!updateResponse.ok) {
+      const errText = await updateResponse.text();
+      return new Response(JSON.stringify({ error: errText }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response(JSON.stringify({ status: mood }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
+
+  return new Response('Method Not Allowed', { status: 405 });
 }
