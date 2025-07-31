@@ -24,7 +24,7 @@ export default {
   data(){
     return{
       show : false,
-      todayStatus : 'newStatus'
+      todayStatus : ''
     }
   },
   methods:{
