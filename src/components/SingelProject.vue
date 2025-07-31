@@ -30,7 +30,7 @@ props :["project"],
 data(){
     return{
     showdetails : false,
-    uri : '/api/projects/' + this.project.id
+    uri : 'http://localhost:3000/projects/' + this.project.id
     }
 },
 methods:{
